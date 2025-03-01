@@ -1,0 +1,44 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [ master ]  # O la rama principal que estés utilizando (puede ser 'master')
+  workflow_dispatch:    # Permite ejecutar el workflow manualmente desde la interfaz de GitHub
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow only one concurrent deployment
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      # Configura GitHub Pages
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+        
+      # Si necesitas algún procesamiento antes de desplegar (por ejemplo, minificar los archivos)
+      # puedes añadir pasos adicionales aquí
+      
+      # Sube los archivos estáticos
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.'  # Sube todo el contenido del repositorio
+          
+      # Despliega en GitHub Pages
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
